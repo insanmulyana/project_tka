@@ -15,19 +15,18 @@ st.set_page_config(
 # --- STYLE TOMBOL CUSTOM ---
 st.markdown("""
     <style>
-    /* Mengubah gaya tombol Simpan Konfirmasi */
     div.stButton > button:first-child {
-        background-color: #28a745; /* Biru Neon Soft */
+        background-color: #28a745;
         color: white;
         border-radius: 8px;
         border: none;
         padding: 0.5rem 2rem;
         font-weight: bold;
         transition: 0.3s;
-        width: 100%; /* Agar tombol lebar dan mudah ditekan di tablet */
+        width: 100%;
     }
     div.stButton > button:first-child:hover {
-        background-color: #008fb3; /* Warna saat disentuh/hover */
+        background-color: #008fb3;
         color: white;
     }
     </style>
@@ -123,7 +122,7 @@ if input_nis and input_tgl:
 
 #paneladmin
 st.write("")
-with st.expander("Panel Admin"):
+with st.expander("Panel Admin (hanya diakses admin sekolah)"):
     pw = st.text_input("Password", type="password")
     if pw == "admin123":
         st.write("### Rekapitulasi Verifikasi")
@@ -133,3 +132,4 @@ with st.expander("Panel Admin"):
         with col_admin1:
             csv = st.session_state.df_siswa.to_csv(index=False).encode('utf-8')
             st.download_button("Download Data (CSV)", csv, "hasil_verifikasi.csv", "text/csv")
+
