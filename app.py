@@ -43,7 +43,7 @@ with col_logo:
 with col_judul:
     st.markdown("""
         <div style='line-height: 1.2;'>
-            <h2 style='margin-bottom: 0;'>VERIFIKASI DATA SISWA TKA 2025</h2>
+            <h3 style='margin-bottom: 0;'>VERIFIKASI DATA SISWA TKA 2025</h3>
             <p style='font-size: 18px; margin-top: 0;'>SMA KARTIKA XIX-1 BANDUNG</p>
         </div>
         """, unsafe_allow_html=True)
@@ -112,4 +112,5 @@ with st.expander("Panel Admin"):
         col_admin1, col_admin2 = st.columns(2)
         with col_admin1:
             csv = st.session_state.df_siswa.to_csv(index=False).encode('utf-8')
+
             st.download_button("Download Data (CSV)", csv, "hasil_verifikasi.csv", "text/csv")
