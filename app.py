@@ -15,7 +15,7 @@ st.set_page_config(
 st.markdown("""
     <style>
     div.stButton > button:first-child {
-        background-color: #28a745; /* Biru Neon Soft */
+        background-color: #00d4ff; /* Biru Neon Soft */
         color: white;
         border-radius: 8px;
         border: none;
@@ -131,6 +131,7 @@ with st.expander("Panel Admin (khusus diakses admin sekolah)"):
             csv = st.session_state.df_siswa.to_csv(index=False).encode('utf-8')
 
             st.download_button("Download Data (CSV)", csv, "hasil_verifikasi.csv", "text/csv")
+
 
 
 
