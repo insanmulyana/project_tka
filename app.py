@@ -12,7 +12,24 @@ st.set_page_config(
     page_icon=LOGO_FILE if os.path.exists(LOGO_FILE) else "📝",
     layout="centered"
 )
-
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #28a745; /* Biru Neon Soft */
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 0.5rem 2rem;
+        font-weight: bold;
+        transition: 0.3s;
+        width: 100%; /* Agar tombol lebar dan mudah ditekan di tablet */
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #008fb3; /* Warna saat disentuh/hover */
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 #fungsi_data
 def muat_data():
     if os.path.exists(FILE_DATA):
@@ -114,5 +131,6 @@ with st.expander("Panel Admin (khusus diakses admin sekolah)"):
             csv = st.session_state.df_siswa.to_csv(index=False).encode('utf-8')
 
             st.download_button("Download Data (CSV)", csv, "hasil_verifikasi.csv", "text/csv")
+
 
 
