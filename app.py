@@ -103,7 +103,7 @@ if input_nis and input_tgl:
 
 #paneladmin
 st.write("")
-with st.expander("Panel Admin"):
+with st.expander("Panel Admin (hanya diakses admin sekolah"):
     pw = st.text_input("Password", type="password")
     if pw == "admin123":
         st.write("### Rekapitulasi Verifikasi")
@@ -114,3 +114,4 @@ with st.expander("Panel Admin"):
             csv = st.session_state.df_siswa.to_csv(index=False).encode('utf-8')
 
             st.download_button("Download Data (CSV)", csv, "hasil_verifikasi.csv", "text/csv")
+
