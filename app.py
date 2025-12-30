@@ -15,19 +15,19 @@ st.set_page_config(
 # --- STYLE TOMBOL CUSTOM ---
 st.markdown("""
     <style>
-    /* Mengubah gaya tombol Simpan Konfirmasi */
+    
     div.stButton > button:first-child {
-        background-color: #28a745; /* Biru Neon Soft */
+        background-color: #28a745;
         color: white;
         border-radius: 8px;
         border: none;
         padding: 0.5rem 2rem;
         font-weight: bold;
         transition: 0.3s;
-        width: 100%; /* Agar tombol lebar dan mudah ditekan di tablet */
+        width: 100%; 
     }
     div.stButton > button:first-child:hover {
-        background-color: #008fb3; /* Warna saat disentuh/hover */
+        background-color: #008fb3; 
         color: white;
     }
     </style>
@@ -63,7 +63,7 @@ with col_logo:
 with col_judul:
     st.markdown("""
         <div style='line-height: 1.2;'>
-            <h3 style='margin-bottom: 0;'>VERIFIKASI DATA SISWA TKA 2025</h3>
+            <h3 style='margin-bottom: 0;'>VERIFIKASI DATA TKA 2025</h3>
             <p style='font-size: 18px; margin-top: 0;'>SMA KARTIKA XIX-1 BANDUNG</p>
         </div>
         """, unsafe_allow_html=True)
@@ -133,6 +133,7 @@ with st.expander("Panel Admin (hanya diakses admin sekolah!)"):
         with col_admin1:
             csv = st.session_state.df_siswa.to_csv(index=False).encode('utf-8')
             st.download_button("Download Data (CSV)", csv, "hasil_verifikasi.csv", "text/csv")
+
 
 
 
