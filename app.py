@@ -1,135 +1,75 @@
 import streamlit as st
 import pandas as pd
-import os
 from datetime import datetime
 
-#konfig
-FILE_DATA = "data_siswa.xlsx"
-LOGO_FILE = "logo_sekolah.png"
+# --- 1. KONFIGURASI ---
+# GANTI LINK DI BAWAH INI DENGAN LINK GOOGLE SHEETS ANDA
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1Vr8LdlC2COe-zqPKFyrtqMvGFUF3XbjhaOlfkGO-oz0/edit?usp=sharing"
 
-st.set_page_config(
-    page_title="Verifikasi Data TKA",
-    page_icon=LOGO_FILE if os.path.exists(LOGO_FILE) else "📝",
-    layout="centered"
-)
-# --- STYLE TOMBOL CUSTOM ---
+st.set_page_config(page_title="Verifikasi Data TKA", layout="centered")
+
+# CSS Tombol Tetap Sama
 st.markdown("""
     <style>
-    /* Mengubah gaya tombol Simpan Konfirmasi */
     div.stButton > button:first-child {
-        background-color: #28a745; /* Biru Neon Soft */
-        color: white;
-        border-radius: 8px;
-        border: none;
-        padding: 0.5rem 2rem;
-        font-weight: bold;
-        transition: 0.3s;
-        width: 100%; /* Agar tombol lebar dan mudah ditekan di tablet */
-    }
-    div.stButton > button:first-child:hover {
-        background-color: #008fb3; /* Warna saat disentuh/hover */
-        color: white;
+        background-color: #00d4ff; color: white; border-radius: 8px;
+        width: 100%; font-weight: bold; height: 3rem;
     }
     </style>
     """, unsafe_allow_html=True)
 
-#fungsi_data
+# --- 2. FUNGSI DATA GOOGLE SHEETS ---
 def muat_data():
-    if os.path.exists(FILE_DATA):
-        df = pd.read_excel(FILE_DATA)
-        df.columns = df.columns.str.strip().str.lower()
-        # Inisialisasi kolom jika belum ada
-        for col in ['status', 'catatan_perbaikan', 'waktu_akses']:
-            if col not in df.columns:
-                df[col] = ""
-        df['nis'] = df['nis'].astype(str)
-        df['tgl_lahir'] = df['tgl_lahir'].astype(str)
-        return df
-    else:
-        st.error(f"File {FILE_DATA} tidak ditemukan!")
-        return None
+    # Mengubah link share menjadi link download CSV agar bisa dibaca Pandas
+    csv_url = SHEET_URL.replace('/edit?usp=sharing', '/export?format=csv').replace('/edit#gid=', '/export?format=csv&gid=')
+    df = pd.read_csv(csv_url)
+    df.columns = df.columns.str.strip().str.lower()
+    df['nis'] = df['nis'].astype(str)
+    df['tgl_lahir'] = df['tgl_lahir'].astype(str)
+    return df
 
-def simpan_data(df):
-    df.to_excel(FILE_DATA, index=False)
+# Karena update ke Google Sheets via link publik butuh library tambahan atau API,
+# Untuk cara tercepat "darurat" ini, kita gunakan gsheets-connection
+from streamlit_gsheets import GSheetsConnection
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-if 'df_siswa' not in st.session_state:
-    st.session_state.df_siswa = muat_data()
+def update_data(df_baru):
+    conn.update(spreadsheet=SHEET_URL, data=df_baru)
 
-#logo
-col_logo, col_judul = st.columns([1, 5])
-with col_logo:
-    if os.path.exists(LOGO_FILE):
-        st.image(LOGO_FILE, width=85)
-with col_judul:
-    st.markdown("""
-        <div style='line-height: 1.2;'>
-            <h3 style='margin-bottom: 0;'>VERIFIKASI DATA TKA 2025</h3>
-            <p style='font-size: 18px; margin-top: 0;'>SMA KARTIKA XIX-1 BANDUNG</p>
-        </div>
-        """, unsafe_allow_html=True)
+# Load Data
+df_siswa = muat_data()
 
-st.divider()
-
-#login_siswa
+# --- 3. HEADER & LOGIN (Sama Seperti Kemarin) ---
+st.title("Verifikasi Data Siswa")
 with st.sidebar:
-    st.header("Login Siswa")
-    input_nis = st.text_input("Masukkan NIS")
-    input_tgl = st.text_input("Tanggal Lahir (YYYY-MM-DD)", placeholder="Contoh: 2008-05-10")
+    st.header("Login")
+    input_nis = st.text_input("NIS")
+    input_tgl = st.text_input("Tanggal Lahir (YYYY-MM-DD)")
 
-#verifikasi
 if input_nis and input_tgl:
-    df = st.session_state.df_siswa
-    siswa = df[(df['nis'] == input_nis) & (df['tgl_lahir'] == input_tgl)]
-
+    siswa = df_siswa[(df_siswa['nis'] == input_nis) & (df_siswa['tgl_lahir'] == input_tgl)]
     if not siswa.empty:
         idx = siswa.index[0]
-        st.success(f"Data ditemukan: {siswa.at[idx, 'nama']}")
+        st.success(f"Halo, {siswa.at[idx, 'nama']}")
         
-        # Grid Data Siswa
-        col1, col2 = st.columns(2)
-        with col1:
-            st.text_input("Nama Lengkap", value=siswa.at[idx, 'nama'], disabled=True)
-            st.text_input("Tempat Lahir", value=siswa.at[idx, 'tempat_lahir'], disabled=True)
-            st.text_input("Nama Ayah", value=siswa.at[idx, 'nama_ayah'], disabled=True)
-        with col2:
-            st.text_input("Kelas", value=siswa.at[idx, 'kelas'], disabled=True)
-            st.text_input("Tanggal Lahir", value=siswa.at[idx, 'tgl_lahir'], disabled=True)
+        # Tampilkan Data
+        st.write(f"Status Saat Ini: **{siswa.at[idx, 'status']}**")
+        catatan = st.text_area("Catatan Perbaikan (Kosongkan jika benar):", value=str(siswa.at[idx, 'catatan_perbaikan']) if pd.notna(siswa.at[idx, 'catatan_perbaikan']) else "")
         
-        # Status & Waktu Akses
-        waktu_info = f" | Diakses pada: {siswa.at[idx, 'waktu_akses']}" if pd.notna(siswa.at[idx, 'waktu_akses']) and siswa.at[idx, 'waktu_akses'] != "" else ""
-        st.write(f"Kelas: **{siswa.at[idx, 'kelas']}** | Status: **{siswa.at[idx, 'status']}**{waktu_info}")
-
-        # Expander Perbaikan
-        with st.expander("Klik di sini jika ada kesalahan data"):
-            st.write("Silakan tuliskan detail perbaikan (Nama/TTL/Ayah/Kelas):")
-            perbaikan_val = st.text_area("Detail Perbaikan:", 
-                                         value=str(siswa.at[idx, 'catatan_perbaikan']) if pd.notna(siswa.at[idx, 'catatan_perbaikan']) else "")
-        
-        if st.button("Simpan Konfirmasi"):
-            waktu_skrg = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            if perbaikan_val.strip():
-                st.session_state.df_siswa.at[idx, 'status'] = 'Perlu Perbaikan'
-                st.session_state.df_siswa.at[idx, 'catatan_perbaikan'] = perbaikan_val
-            else:
-                st.session_state.df_siswa.at[idx, 'status'] = 'Data Sudah Benar'
-                st.session_state.df_siswa.at[idx, 'catatan_perbaikan'] = ""
+        if st.button("SIMPAN KONFIRMASI"):
+            # Update DataFrame
+            df_siswa.at[idx, 'status'] = "Perlu Perbaikan" if catatan.strip() else "Data Sudah Benar"
+            df_siswa.at[idx, 'catatan_perbaikan'] = catatan
+            df_siswa.at[idx, 'waktu_akses'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
-            st.session_state.df_siswa.at[idx, 'waktu_akses'] = waktu_skrg
-            simpan_data(st.session_state.df_siswa)
-            st.success(f"Berhasil disimpan pada {waktu_skrg}. Anda bisa menutup halaman ini.")
-            
+            # SIMPAN PERMANEN KE GOOGLE SHEETS
+            update_data(df_siswa)
+            st.balloons()
+            st.success("DATA BERHASIL DISIMPAN PERMANEN DI GOOGLE SHEETS!")
     else:
-        st.error("NIS atau Tanggal Lahir salah.")
+        st.error("Data tidak cocok.")
 
-#paneladmin
-st.write("")
-with st.expander("Panel Admin (hanya diakses admin sekolah!)"):
-    pw = st.text_input("Password", type="password")
-    if pw == "admin123":
-        st.write("### Rekapitulasi Verifikasi")
-        st.dataframe(st.session_state.df_siswa)
-        
-        col_admin1, col_admin2 = st.columns(2)
-        with col_admin1:
-            csv = st.session_state.df_siswa.to_csv(index=False).encode('utf-8')
-            st.download_button("Download Data (CSV)", csv, "hasil_verifikasi.csv", "text/csv")
+# Admin Panel (Sama)
+with st.expander("Admin"):
+    if st.text_input("Password", type="password") == "admin123":
+        st.dataframe(df_siswa)
