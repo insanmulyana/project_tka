@@ -73,5 +73,3 @@ if input_nis and input_tgl:
 with st.expander("Admin"):
     if st.text_input("Password", type="password") == "admin123":
         st.dataframe(df_siswa)
-
-
