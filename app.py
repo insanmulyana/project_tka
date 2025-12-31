@@ -15,11 +15,17 @@ st.set_page_config(page_title="Verifikasi Data TKA", layout="centered")
 st.markdown("""
     <style>
     div.stButton > button:first-child {
-        background-color: #00d4ff; color: white; border-radius: 8px;
-        width: 100%; font-weight: bold; height: 3.5rem; font-size: 18px;
-        border: none; transition: 0.3s;
+        background-color: #28a745; /* Biru Neon Soft */
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 0.5rem 2rem;
+        font-weight: bold;
+        transition: 0.3s;
+        width: 100%;
     }
-    div.stButton > button:first-child:hover { background-color: #008fb3; }
+    div.stButton > button:first-child:hover { background-color: #008fb3;
+    color: white; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -43,8 +49,8 @@ with col_logo:
 with col_judul:
     st.markdown("""
         <div style='line-height: 1.2;'>
-            <h2 style='margin-bottom: 0;'>Verifikasi Data Siswa</h2>
-            <p style='font-size: 18px; margin-top: 0;'>Sertifikat Nilai TKA</p>
+            <h3 style='margin-bottom: 0;'>VERIFIKASI DATA TKA 2025</h3>
+            <p style='font-size: 18px; margin-top: 0;'>SMA KARTIKA XIX-1 BANDUNG</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -126,3 +132,4 @@ with st.expander("Panel Admin"):
         
         csv = df_admin.to_csv(index=False).encode('utf-8')
         st.download_button("Download CSV", csv, "rekap_tka.csv", "text/csv")
+
