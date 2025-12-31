@@ -34,7 +34,6 @@ from streamlit_gsheets import GSheetsConnection
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 def update_data(df_baru):
-    st.cache_data.clear()
     conn.update(spreadsheet=SHEET_URL, data=df_baru)
 
 # Load Data
@@ -74,4 +73,5 @@ if input_nis and input_tgl:
 with st.expander("Admin"):
     if st.text_input("Password", type="password") == "admin123":
         st.dataframe(df_siswa)
+
 
